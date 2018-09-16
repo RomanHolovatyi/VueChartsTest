@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Axios from 'axios'
-// import { api } from '@/modules/api'
+import { api } from '@/modules/api'
 
 
 const instance = Axios.create({
-  baseURL: 'http://api.spending.gov.ua/api/v2/'
+  baseURL: api.baseUrl
 })
 
 // Add axios instance to the store and Vue prototype
