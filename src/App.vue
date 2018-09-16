@@ -8,6 +8,11 @@
 export default {
   name: 'app',
   components: {
+  },
+  async mounted () {
+    /* eslint-disable */
+    const asd = await this.$axios.get('https://cors-anywhere.herokuapp.com/http://api.spending.gov.ua/api/v2/dictionaries/regions')
+    console.log('asd', asd)
   }
 }
 </script>
