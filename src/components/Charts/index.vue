@@ -2,7 +2,8 @@
   <section class="chart-section-wrapper">
     <div>
       <h1>Top 100 transactions by region on timeline</h1>
-      <vue-c3 :handler="handler"></vue-c3>
+      <!--<vue-c3 :handler="handler"></vue-c3>-->
+      <div id="chart"></div>
     </div>
   </section>
 </template>
@@ -10,13 +11,16 @@
 <script>
   import Vue from 'vue'
   import VueC3 from 'vue-c3'
+  import c3 from 'c3'
+  import 'd3/dist/d3.min.js'
 
   export default {
     name: 'Chart',
     components: {
+      VueC3
     },
     props: {
-      transitions: {
+      transactions: {
         type: Array,
         default: () => ([])
       }
@@ -25,39 +29,60 @@
       return {
         chart: null,
         showSpinner: true,
+        options: {},
         handler: new Vue()
       }
     },
     watch: {
-      transitions: {
+      transactions: {
         handler (newVal, oldVal) {
-          this.showSpinner = true
-          if (prop('length', oldVal)) {
+          if (oldVal.length) {
             oldVal.forEach((el, index) => {
               this.chart.unload({ ids: oldVal[index][0] })
+              // this.handler.$emit('dispatch', (chart) => chart.unload({ ids: oldVal[index][0] }))
             })
           }
-          if (prop('length', newVal)) {
+          if (newVal.length) {
             setTimeout(() => {
+              // this.handler.$emit('dispatch', (chart) => chart.load({ columns: newVal }))
+              console.log('newVal', newVal)
               this.chart.load({ columns: newVal })
               this.showSpinner = false
             }, 350)
           }
+
+          this.showSpinner = true
         },
         immeditate: true
       }
     },
     mounted () {
       // to init the graph call:
-      const options = {
+      //      this.options = {
+      //        data: {
+      //          columns: [
+      //            ['data1', 2, 4, 1, 5, 2, 1],
+      //            ['data2', 7, 2, 4, 6, 10, 1]
+      //          ]
+      //        }
+      //      }
+      //      this.handler.$emit('init', this.options)
+      this.chart = c3.generate({
+        bindto: '#chart',
         data: {
-          columns: [
-            ['data1', 2, 4, 1, 5, 2, 1],
-            ['data2', 7, 2, 4, 6, 10, 1]
-          ]
+          x: 'x',
+          columns: [],
+          type: 'bar'
+        },
+        axis: {
+          x: {
+            type: 'timeseries',
+            tick: {
+              format: '%Y-%m-%d'
+            }
+          }
         }
-      }
-      this.handler.$emit('init', options)
+      })
     }
   }
 </script>

@@ -8,7 +8,7 @@ const regions = {
 
 const transactions = {
   getTransactions () {
-    return '/transactions/top100'
+    return 'api/transactions/top100'
   }
 }
 
