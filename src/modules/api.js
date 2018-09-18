@@ -1,4 +1,4 @@
-const baseUrl = 'https://cors-anywhere.herokuapp.com/http://api.spending.gov.ua/api/v2'
+const baseUrl = 'https://cors-escape.herokuapp.com/http://api.spending.gov.ua/api/v2'
 
 const regions = {
   getRegions () {
@@ -8,7 +8,7 @@ const regions = {
 
 const transactions = {
   getTransactions () {
-    return 'api/transactions/top100?region=3'
+    return 'api/transactions/top100'
   }
 }
 

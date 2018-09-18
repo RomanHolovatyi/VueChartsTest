@@ -55,54 +55,16 @@
     },
     watch: {
       transactions: {
-        handler (newVal, oldVal) {
-          if (oldVal.length) {
-            oldVal.forEach((el, index) => {
-              this.chart.unload({ ids: oldVal[index][0] })
-              // this.handler.$emit('dispatch', (chart) => chart.unload({ ids: oldVal[index][0] }))
-            })
-          }
+        handler (newVal) {
           if (newVal.length) {
-            setTimeout(() => {
-              // this.handler.$emit('dispatch', (chart) => chart.load({ columns: newVal }))
-              // this.chart.load({ columns: [ 'x', 43, 34, 43 ] })
-              this.chartData = [...this.transactions]
-              this.showSpinner = false
-            }, 1350)
+            this.chartData = [...this.transactions]
+            this.showSpinner = false
           }
 
           this.showSpinner = true
         },
         immeditate: true
       }
-    },
-    mounted () {
-      // to init the graph call:
-      //      this.options = {
-      //        data: {
-      //          columns: [
-      //            ['data1', 2, 4, 1, 5, 2, 1],
-      //            ['data2', 7, 2, 4, 6, 10, 1]
-      //          ]
-      //        }
-      //      }
-      //      this.handler.$emit('init', this.options)
-      this.chart = c3.generate({
-        bindto: '#chart',
-        data: {
-          x: 'x',
-          columns: [],
-          type: 'bar'
-        },
-        axis: {
-          x: {
-            type: 'timeseries',
-            tick: {
-              format: '%Y-%m-%d'
-            }
-          }
-        }
-      })
     }
   }
 </script>
