@@ -3,7 +3,12 @@
     <div>
       <h1>Top 100 transactions by region on timeline</h1>
       <!--<vue-c3 :handler="handler"></vue-c3>-->
-      <div id="chart"></div>
+      <!--<div id="chart"></div>-->
+      <GChart
+        type="ColumnChart"
+        :data="chartData"
+        :options="chartOptions"
+      />
     </div>
   </section>
 </template>
@@ -13,11 +18,13 @@
   import VueC3 from 'vue-c3'
   import c3 from 'c3'
   import 'd3/dist/d3.min.js'
+  import { GChart } from 'vue-google-charts'
 
   export default {
     name: 'Chart',
     components: {
-      VueC3
+      VueC3,
+      GChart
     },
     props: {
       transactions: {
@@ -30,7 +37,20 @@
         chart: null,
         showSpinner: true,
         options: {},
-        handler: new Vue()
+        handler: new Vue(),
+        chartData: [
+          ["Year", "Sales", "Expenses", "Profit"],
+          ["2014", 1000, 400, 200],
+          ["2015", 1170, 460, 250],
+          ["2016", 660, 1120, 300],
+          ["2017", 1030, 540, 350]
+        ],
+        chartOptions: {
+          chart: {
+            title: "Company Performance",
+            subtitle: "Sales, Expenses, and Profit: 2014-2017"
+          }
+        }
       }
     },
     watch: {
@@ -45,10 +65,10 @@
           if (newVal.length) {
             setTimeout(() => {
               // this.handler.$emit('dispatch', (chart) => chart.load({ columns: newVal }))
-              console.log('newVal', newVal)
-              this.chart.load({ columns: newVal })
+              // this.chart.load({ columns: [ 'x', 43, 34, 43 ] })
+              this.chartData = [...this.transactions]
               this.showSpinner = false
-            }, 350)
+            }, 1350)
           }
 
           this.showSpinner = true
