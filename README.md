@@ -1,5 +1,8 @@
 # VueChartsTest
 
+## Demo
+http://rh-vue-chart-test.surge.sh/
+
 ## Project setup
 ```
 npm install
