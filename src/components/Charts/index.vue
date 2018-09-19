@@ -23,14 +23,6 @@
         type: Array,
         default: () => ([])
       }
-    },
-    data () {
-      return {
-        chart: null,
-        showSpinner: true,
-        options: {},
-        chartData: []
-      }
     }
   }
 </script>

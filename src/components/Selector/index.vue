@@ -3,7 +3,7 @@
     <h1 class="selector__title">Please select region</h1>
     <select
       class="selector__select"
-      @input="event => { $emit('input', event.target.value) }"
+      @input="onInput"
       v-model="selectedOption"
     >
       <option
@@ -34,11 +34,16 @@
       }
     },
     watch: {
-      selectedRegion: {
+      value: {
         handler (val) {
           this.selectedOption = val
         },
         immediate: true
+      }
+    },
+    methods: {
+      onInput ($event) {
+        this.$emit('input', $event.target.value)
       }
     }
   }

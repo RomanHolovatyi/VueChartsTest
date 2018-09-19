@@ -1,22 +1,30 @@
 <template>
   <div id="app">
     <transition name="fade">
-      <div key="spinner" v-if="loading" class="spinner-wrapper">
+      <div
+        v-if="loading"
+        class="spinner-wrapper"
+      >
         <scale-loader
           :loading="loading"
           :color="'blue'"
         />
       </div>
-      <div key="content" v-else>
-        <selector v-model="selectedRegion" :regionsList="regions" />
-        <charts v-if="isRegionSelected && transactions" :transactions="transactions" />
+      <div v-else>
+        <selector
+          v-model="selectedRegion"
+          :regionsList="regions"
+        />
+        <charts
+          v-if="selectedRegion && transactions"
+          :transactions="transactions"
+        />
       </div>
     </transition>
   </div>
 </template>
 
 <script>
-  // TODO add try catch
   import { api } from '@/modules/api'
   import Charts from '@/components/Charts'
   import Selector from '@/components/Selector'
@@ -31,16 +39,27 @@
       return {
         regions: [],
         transactions: [],
-        isRegionSelected: false,
         loading: true,
         selectedRegion: ''
       }
     },
+    watch: {
+      selectedRegion () {
+        this.getTransactionsList(this.selectedRegion)
+      }
+    },
     methods: {
-      async setInitialData () {
-        this.regions = (await this.$axios.get(api.regions.getRegions())).data
+      async getRegionsList () {
+        try {
+          this.loading = true
+          this.regions = (await this.$axios.get(api.regions.getRegions())).data
+        } catch (err) {
+          console.log(err)
+        } finally {
+          this.loading = false
+        }
       },
-      async getTransactions (regionCode) {
+      async getTransactionsList (regionCode) {
         try {
           this.loading = true
           this.transactions = (await this.$axios.get(api.transactions.getTransactions(), { params: { region: regionCode }})).data
@@ -54,25 +73,12 @@
           ]
           this.loading = false
         } catch (err) {
-          /* eslint-disable */
-          console.warn('error in getTransactions')
-          console.error(err)
-        }
-      },
-      onSelectChange (regionCode) {
-        try {
-          this.isRegionSelected = true
-          this.getTransactions(regionCode)
-        } catch (err) {
-          console.warn('error in onChange')
           console.error(err)
         }
       }
     },
-    async mounted () {
-      this.loading = true
-      await this.setInitialData()
-      this.loading = false
+    mounted () {
+      this.getRegionsList()
     }
   }
 </script>
@@ -84,20 +90,23 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
   }
 
   .spinner-wrapper {
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 90vh;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;
   }
-  .fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+  .fade-enter, .fade-leave-to {
     opacity: 0;
   }
 </style>
