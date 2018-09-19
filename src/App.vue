@@ -3,6 +3,7 @@
     <transition name="fade">
       <div
         v-if="loading"
+        key="spinner"
         class="spinner-wrapper"
       >
         <scale-loader
@@ -10,7 +11,10 @@
           :color="'blue'"
         />
       </div>
-      <div v-else>
+      <div
+        v-else
+        key="content"
+      >
         <selector
           v-model="selectedRegion"
           :regionsList="regions"
@@ -64,13 +68,15 @@
           this.loading = true
           this.transactions = (await this.$axios.get(api.transactions.getTransactions(), { params: { region: regionCode }})).data
           const sortedTransactions = this.transactions.sort((a, b) => a.trans_date.localeCompare(b.trans_date))
-          this.transactions = sortedTransactions.map((item) => {
-            return [item.trans_date, item.amount]
-          })
-          this.transactions = [
-            [ 'Date', 'Amount' ],
-            ...this.transactions
-          ]
+          this.transactions = sortedTransactions.map((item) => [item.trans_date, item.amount])
+          if (this.transactions.length) {
+            this.transactions = [
+              [ 'Date', 'Amount' ],
+              ...this.transactions
+            ]
+          } else {
+            this.transactions = []
+          }
           this.loading = false
         } catch (err) {
           console.error(err)
