@@ -1,15 +1,17 @@
 <template>
   <div id="app">
-    <div v-if="loading" class="spinner-wrapper">
-      <scale-loader
-        :loading="loading"
-        :color="'blue'"
-      />
-    </div>
-    <div v-else>
-      <selector @input="onSelectChange" :regionsList="regions"/>
-      <charts :transactions="transactions" />
-    </div>
+    <transition name="fade">
+      <div key="spinner" v-if="loading" class="spinner-wrapper">
+        <scale-loader
+          :loading="loading"
+          :color="'blue'"
+        />
+      </div>
+      <div key="content" v-else>
+        <selector v-model="selectedRegion" :regionsList="regions" />
+        <charts v-if="isRegionSelected && transactions" :transactions="transactions" />
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -29,8 +31,9 @@
       return {
         regions: [],
         transactions: [],
-        chosenRegion: '',
-        loading: false
+        isRegionSelected: false,
+        loading: true,
+        selectedRegion: ''
       }
     },
     methods: {
@@ -39,9 +42,9 @@
       },
       async getTransactions (regionCode) {
         try {
+          this.loading = true
           this.transactions = (await this.$axios.get(api.transactions.getTransactions(), { params: { region: regionCode }})).data
           const sortedTransactions = this.transactions.sort((a, b) => a.trans_date.localeCompare(b.trans_date))
-          // const transactionsDates = Array.from(new Set(this.transactions.map((item) => item.trans_date ).sort()))
           this.transactions = sortedTransactions.map((item) => {
             return [item.trans_date, item.amount]
           })
@@ -49,6 +52,7 @@
             [ 'Date', 'Amount' ],
             ...this.transactions
           ]
+          this.loading = false
         } catch (err) {
           /* eslint-disable */
           console.warn('error in getTransactions')
@@ -57,7 +61,7 @@
       },
       onSelectChange (regionCode) {
         try {
-          this.selectedRegion = regionCode
+          this.isRegionSelected = true
           this.getTransactions(regionCode)
         } catch (err) {
           console.warn('error in onChange')
@@ -87,5 +91,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 90vh;
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+    opacity: 0;
   }
 </style>
